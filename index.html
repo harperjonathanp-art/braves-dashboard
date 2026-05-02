@@ -6,7 +6,6 @@
   <title>Atlanta Braves 2026 Dashboard</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
   <style>
-    /* ─── TOKENS ─────────────────────────────────────────── */
     :root {
       --red:    #CE1141;
       --navy:   #13274F;
@@ -18,68 +17,12 @@
       --green:  #4ade80;
       --amber:  #f59e0b;
       --border: rgba(255,255,255,0.07);
-      --radius: 10px;
     }
 
-    /* ─── RESET ──────────────────────────────────────────── */
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Georgia', serif;
-      min-height: 100vh;
-    }
+    body { background: var(--bg); color: var(--text); font-family: 'Georgia', serif; min-height: 100vh; }
 
-    /* ─── SETUP OVERLAY ──────────────────────────────────── */
-    #setup {
-      position: fixed; inset: 0;
-      background: rgba(10,12,20,0.96);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 999;
-      backdrop-filter: blur(4px);
-    }
-    .setup-card {
-      background: var(--card);
-      border: 1px solid rgba(206,17,65,0.3);
-      border-radius: 14px;
-      padding: 2.5rem;
-      max-width: 480px;
-      width: 90%;
-    }
-    .setup-logo {
-      width: 56px; height: 56px; border-radius: 50%;
-      background: var(--red);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 28px; font-weight: 700; font-style: italic; color: #fff;
-      margin: 0 auto 1.25rem;
-    }
-    .setup-card h1 { font-size: 20px; text-align: center; margin-bottom: .25rem; }
-    .setup-card h1 em { color: var(--red); }
-    .setup-card p  { font-size: 13px; color: var(--muted); text-align: center; font-family: sans-serif; margin-bottom: 1.75rem; line-height: 1.6; }
-    .setup-label { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-family: sans-serif; margin-bottom: 6px; }
-    .setup-card input[type=password], .setup-card input[type=text] {
-      width: 100%; background: var(--bg);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 7px; padding: 10px 12px;
-      color: var(--text); font-family: sans-serif; font-size: 14px;
-      margin-bottom: 14px;
-      transition: border-color .2s;
-    }
-    .setup-card input:focus { outline: none; border-color: var(--red); }
-    .setup-btn {
-      width: 100%; background: var(--red); color: #fff;
-      border: none; border-radius: 7px;
-      padding: 11px; font-size: 13px; font-family: sans-serif;
-      letter-spacing: .05em; text-transform: uppercase;
-      cursor: pointer; transition: opacity .2s;
-    }
-    .setup-btn:hover { opacity: .85; }
-    .setup-hint { font-size: 11px; color: var(--muted); font-family: sans-serif; text-align: center; margin-top: 12px; line-height: 1.5; }
-    .setup-hint a { color: var(--red); }
-    .setup-err { color: #f87171; font-size: 12px; font-family: sans-serif; text-align: center; margin-bottom: 10px; min-height: 16px; }
-
-    /* ─── HEADER ─────────────────────────────────────────── */
+    /* ── HEADER ── */
     header {
       background: linear-gradient(135deg, var(--navy), #0d1a38);
       border-bottom: 3px solid var(--red);
@@ -99,230 +42,157 @@
     .hdr-right { margin-left: auto; text-align: right; }
     .hdr-rec { font-size: 28px; font-weight: 700; font-family: sans-serif; letter-spacing: -.02em; }
     .hdr-div { font-size: 10px; color: var(--red); text-transform: uppercase; letter-spacing: .1em; font-family: sans-serif; margin-top: 3px; }
-    .hdr-actions { display: flex; align-items: center; gap: 10px; margin-left: 18px; }
     .btn-refresh {
-      background: var(--red); color: #fff; border: none;
-      padding: 8px 14px; border-radius: 6px;
-      font-size: 11px; font-family: sans-serif;
-      text-transform: uppercase; letter-spacing: .06em;
-      cursor: pointer; white-space: nowrap;
-      transition: opacity .2s;
+      margin-left: 18px; background: var(--red); color: #fff; border: none;
+      padding: 9px 16px; border-radius: 6px; font-size: 11px; font-family: sans-serif;
+      text-transform: uppercase; letter-spacing: .06em; cursor: pointer;
+      white-space: nowrap; transition: opacity .2s; flex-shrink: 0;
     }
     .btn-refresh:hover { opacity: .8; }
     .btn-refresh:disabled { opacity: .45; cursor: default; }
-    .btn-settings {
-      background: none; border: 1px solid var(--border);
-      color: var(--muted); padding: 8px 10px;
-      border-radius: 6px; cursor: pointer; font-size: 15px;
-      transition: color .2s;
-    }
-    .btn-settings:hover { color: var(--text); }
 
-    /* ─── NAV ────────────────────────────────────────────── */
+    /* ── NAV ── */
     nav {
-      background: #0d1528;
-      border-bottom: 1px solid var(--border);
-      padding: 0 1.75rem;
-      display: flex; gap: 0;
+      background: #0d1528; border-bottom: 1px solid var(--border);
+      padding: 0 1.75rem; display: flex;
       position: sticky; top: 79px; z-index: 40;
     }
     nav button {
-      background: none; border: none;
-      border-bottom: 2px solid transparent;
-      color: var(--muted); padding: 12px 20px;
-      font-size: 11px; text-transform: uppercase;
-      letter-spacing: .07em; font-family: sans-serif;
+      background: none; border: none; border-bottom: 2px solid transparent;
+      color: var(--muted); padding: 12px 20px; font-size: 11px;
+      text-transform: uppercase; letter-spacing: .07em; font-family: sans-serif;
       cursor: pointer; transition: color .2s, border-color .2s;
     }
     nav button:hover { color: var(--text); }
     nav button.active { color: var(--red); border-bottom-color: var(--red); }
 
-    /* ─── LAYOUT ─────────────────────────────────────────── */
+    /* ── LAYOUT ── */
     main { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1.75rem 4rem; }
-    .tab { display: none; }
-    .tab.active { display: block; }
+    .tab { display: none; } .tab.active { display: block; }
 
-    /* ─── STATUS BAR ─────────────────────────────────────── */
-    .status-bar {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 1.25rem;
-    }
-    .status-text { font-size: 11px; color: var(--muted); font-family: sans-serif; }
-    .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--muted); margin-right: 5px; vertical-align: middle; }
+    /* ── STATUS BAR ── */
+    .status-bar { display: flex; align-items: center; margin-bottom: 1.25rem; gap: 8px; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex-shrink: 0; transition: background .3s; }
     .dot.live { background: var(--green); animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+    .dot.err  { background: var(--red); }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+    .status-text { font-size: 11px; color: var(--muted); font-family: sans-serif; }
 
-    /* ─── STAT CARDS ─────────────────────────────────────── */
+    /* ── STAT CARDS ── */
     .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px,1fr)); gap: 12px; margin-bottom: 1.25rem; }
     .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.1rem; }
     .sc-label { font-size: 9px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-family: sans-serif; margin-bottom: 5px; }
     .sc-val { font-size: 24px; font-weight: 700; font-family: sans-serif; line-height: 1; }
-    .sc-val.red { color: var(--red); }
+    .sc-val.red   { color: var(--red); }
     .sc-val.green { color: var(--green); }
     .sc-sub { font-size: 10px; color: var(--muted); font-family: sans-serif; margin-top: 5px; }
 
-    /* ─── PANELS ─────────────────────────────────────────── */
-    .panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.1rem 1.25rem; }
+    /* ── PANELS ── */
+    .panel { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.1rem 1.25rem; }
     .panel-title { font-size: 9px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-family: sans-serif; padding-bottom: 9px; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-    .full { margin-bottom: 12px; }
+    .full    { margin-bottom: 12px; }
 
-    /* ─── SUMMARY ────────────────────────────────────────── */
-    .summary {
-      background: rgba(206,17,65,0.07);
-      border: 1px solid rgba(206,17,65,0.18);
-      border-radius: 8px; padding: 10px 14px;
-      font-size: 13px; line-height: 1.65;
-      font-style: italic; color: #c8cdd8;
-      margin-bottom: 1.1rem;
-    }
-
-    /* ─── STANDINGS ──────────────────────────────────────── */
-    .stand-row {
-      display: flex; align-items: center; gap: 10px;
-      padding: 7px 0; border-bottom: 1px solid var(--border);
-      font-size: 12px; font-family: sans-serif;
-    }
+    /* ── STANDINGS ── */
+    .stand-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 12px; font-family: sans-serif; }
     .stand-row:last-child { border-bottom: none; }
     .st-team { width: 38px; font-weight: 700; }
     .st-bar-bg { flex: 1; background: rgba(255,255,255,0.06); border-radius: 3px; height: 6px; }
     .st-bar { height: 6px; border-radius: 3px; background: var(--muted); }
     .st-rec { width: 50px; text-align: right; color: var(--muted); font-size: 11px; }
     .st-pct { width: 40px; text-align: right; font-size: 11px; font-weight: 700; }
-    .stand-row.atl .st-team, .stand-row.atl .st-pct { color: var(--red); }
-    .stand-row.atl .st-bar { background: var(--red); }
+    .atl .st-team, .atl .st-pct { color: var(--red); }
+    .atl .st-bar { background: var(--red); }
 
-    /* ─── GAME ROWS ──────────────────────────────────────── */
-    .game-row {
-      display: flex; align-items: center; gap: 6px;
-      padding: 7px 0; border-bottom: 1px solid var(--border);
-      font-size: 12px; font-family: sans-serif;
-    }
+    /* ── GAME ROWS ── */
+    .game-row { display: flex; align-items: center; gap: 6px; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 12px; font-family: sans-serif; }
     .game-row:last-child { border-bottom: none; }
-    .gr-date { width: 56px; color: var(--muted); font-size: 10px; }
-    .gr-ha { width: 18px; color: var(--muted); font-size: 10px; }
-    .gr-opp { flex: 1; }
-    .gr-res { width: 18px; font-weight: 700; }
-    .W { color: var(--green); }
-    .L { color: var(--red); }
+    .gr-date  { width: 60px; color: var(--muted); font-size: 10px; }
+    .gr-ha    { width: 20px; color: var(--muted); font-size: 10px; }
+    .gr-opp   { flex: 1; }
+    .gr-res   { width: 18px; font-weight: 700; }
+    .W { color: var(--green); } .L { color: var(--red); }
     .gr-score { width: 44px; text-align: right; color: var(--muted); font-size: 11px; }
+    .gr-rec   { width: 44px; text-align: right; color: var(--muted); font-size: 10px; }
 
-    /* ─── SCHEDULE ───────────────────────────────────────── */
-    .sched-row {
-      display: flex; align-items: center; gap: 8px;
-      padding: 8px 0; border-bottom: 1px solid var(--border);
-      font-size: 12px; font-family: sans-serif;
-    }
+    /* ── SCHEDULE ── */
+    .sched-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 12px; font-family: sans-serif; }
     .sched-row:last-child { border-bottom: none; }
-    .sd-date { width: 60px; color: var(--muted); font-size: 10px; }
+    .sd-date { width: 64px; color: var(--muted); font-size: 10px; }
     .sd-ha { font-size: 9px; padding: 2px 5px; border-radius: 3px; }
     .sd-ha.home { background: rgba(74,222,128,.1); color: var(--green); }
-    .sd-ha.away { background: rgba(245,158,11,.1); color: var(--amber); }
-    .sd-opp { flex: 1; }
+    .sd-ha.away { background: rgba(245,158,11,.1);  color: var(--amber); }
+    .sd-opp  { flex: 1; }
     .sd-time { color: var(--muted); font-size: 11px; }
-    .sd-result { font-size: 11px; font-weight: 700; }
-    .sd-result.W { color: var(--green); }
-    .sd-result.L { color: var(--red); }
+    .sd-res  { font-size: 11px; font-weight: 700; }
+    .sd-res.W { color: var(--green); } .sd-res.L { color: var(--red); }
 
-    /* ─── STATS TABLE ────────────────────────────────────── */
+    /* ── STATS TABLE ── */
     .stat-tbl { width: 100%; border-collapse: collapse; font-size: 12px; font-family: sans-serif; }
-    .stat-tbl th {
-      text-align: right; padding: 6px 8px;
-      font-size: 9px; text-transform: uppercase; letter-spacing: .06em;
-      color: var(--muted); border-bottom: 1px solid var(--border); font-weight: 400;
-    }
+    .stat-tbl th { text-align: right; padding: 6px 8px; font-size: 9px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); border-bottom: 1px solid var(--border); font-weight: 400; }
     .stat-tbl th:first-child { text-align: left; }
     .stat-tbl td { padding: 7px 8px; text-align: right; border-bottom: 1px solid var(--border); }
     .stat-tbl td:first-child { text-align: left; font-weight: 700; }
     .stat-tbl tr:last-child td { border-bottom: none; }
-    .stat-tbl tr:hover td { background: rgba(255,255,255,0.025); }
+    .stat-tbl tr:hover td { background: rgba(255,255,255,0.02); }
 
-    /* ─── CHARTS ─────────────────────────────────────────── */
+    /* ── CHARTS ── */
     .chart-wrap { position: relative; width: 100%; }
     .legend { display: flex; gap: 14px; font-family: sans-serif; font-size: 11px; color: var(--muted); margin-bottom: 8px; flex-wrap: wrap; }
     .ldot { width: 9px; height: 9px; border-radius: 2px; display: inline-block; margin-right: 4px; vertical-align: middle; }
 
-    /* ─── FOOTER ─────────────────────────────────────────── */
+    /* ── ERROR BOX ── */
+    .err-box { background: rgba(206,17,65,0.07); border: 1px solid rgba(206,17,65,0.2); border-radius: 8px; padding: 12px 14px; font-size: 12px; font-family: sans-serif; color: #f87171; line-height: 1.6; }
+
+    /* ── FOOTER ── */
     footer { text-align: center; padding: 1.75rem; font-size: 11px; color: var(--muted); font-family: sans-serif; letter-spacing: .04em; border-top: 1px solid var(--border); margin-top: 2rem; }
-    footer a { color: var(--muted); text-decoration: underline; }
+    footer a { color: var(--muted); }
 
-    /* ─── LOADING SKELETON ───────────────────────────────── */
-    .skeleton { background: linear-gradient(90deg, var(--card) 25%, var(--card2) 50%, var(--card) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 6px; }
-    @keyframes shimmer { from{background-position:200%} to{background-position:-200%} }
-
-    /* ─── RESPONSIVE ─────────────────────────────────────── */
+    /* ── RESPONSIVE ── */
     @media (max-width: 680px) {
       .two-col { grid-template-columns: 1fr; }
-      header { padding: .9rem 1rem; }
+      header { padding: .9rem 1rem; flex-wrap: wrap; }
       nav { padding: 0 1rem; }
       nav button { padding: 11px 12px; font-size: 10px; }
       main { padding: 1rem 1rem 3rem; }
-      .hdr-actions { flex-direction: column; gap: 6px; align-items: flex-end; }
+      .btn-refresh { margin-left: auto; }
     }
   </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════════
-     SETUP OVERLAY
-════════════════════════════════════════════════════════ -->
-<div id="setup">
-  <div class="setup-card">
-    <div class="setup-logo">A</div>
-    <h1>Atlanta <em>Braves</em> Dashboard</h1>
-    <p>Enter your Anthropic API key to enable live AI-powered data.<br>Your key is saved locally in this browser and never sent anywhere except Anthropic's API.</p>
-    <div class="setup-label">Anthropic API Key</div>
-    <input type="password" id="key-input" placeholder="sk-ant-..." autocomplete="off" />
-    <div class="setup-err" id="setup-err"></div>
-    <button class="setup-btn" onclick="saveKey()">Launch Dashboard</button>
-    <p class="setup-hint">
-      Don't have a key? <a href="https://console.anthropic.com/keys" target="_blank">Get one free at console.anthropic.com</a>.<br>
-      This dashboard uses Claude with web search — costs a few cents per refresh.
-    </p>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════
-     HEADER
-════════════════════════════════════════════════════════ -->
+<!-- ── HEADER ── -->
 <header>
   <div class="hdr-logo">A</div>
   <div class="hdr-name">
     <h1>Atlanta <em>Braves</em></h1>
-    <div class="hdr-meta">2026 Season · AI-Powered Live Dashboard</div>
+    <div class="hdr-meta">2026 Season · Live MLB Data · No API key required</div>
   </div>
   <div class="hdr-right">
     <div class="hdr-rec" id="hdr-rec">—</div>
     <div class="hdr-div" id="hdr-div">Loading…</div>
   </div>
-  <div class="hdr-actions">
-    <button class="btn-refresh" id="refresh-btn" onclick="fetchAI()">✦ Refresh</button>
-    <button class="btn-settings" title="Change API key" onclick="resetKey()">⚙</button>
-  </div>
+  <button class="btn-refresh" id="refresh-btn" onclick="loadAll()">⟳ Refresh</button>
 </header>
 
-<!-- ═══════════════════════════════════════════════════════
-     NAV TABS
-════════════════════════════════════════════════════════ -->
+<!-- ── NAV ── -->
 <nav>
-  <button class="active" onclick="showTab('overview', this)">Overview</button>
-  <button onclick="showTab('gamelog', this)">Game Log</button>
-  <button onclick="showTab('stats', this)">Stats</button>
-  <button onclick="showTab('schedule', this)">Schedule</button>
+  <button class="active" onclick="showTab('overview',this)">Overview</button>
+  <button onclick="showTab('gamelog',this)">Game Log</button>
+  <button onclick="showTab('stats',this)">Stats</button>
+  <button onclick="showTab('schedule',this)">Schedule</button>
 </nav>
 
-<!-- ═══════════════════════════════════════════════════════
-     MAIN CONTENT
-════════════════════════════════════════════════════════ -->
+<!-- ── MAIN ── -->
 <main>
   <div class="status-bar">
-    <span class="status-text"><span class="dot" id="status-dot"></span><span id="status-text">Showing seed data — click Refresh for live AI data</span></span>
+    <span class="dot" id="status-dot"></span>
+    <span class="status-text" id="status-text">Fetching live data from MLB Stats API…</span>
   </div>
 
-  <!-- OVERVIEW TAB -->
+  <!-- OVERVIEW -->
   <div id="tab-overview" class="tab active">
     <div class="stat-grid" id="stat-cards"></div>
-    <div id="summary-area"></div>
     <div class="two-col">
       <div class="panel">
         <div class="panel-title">NL East Standings</div>
@@ -340,7 +210,7 @@
         <span><span class="ldot" style="background:var(--muted)"></span>Losses</span>
       </div>
       <div class="chart-wrap" style="height:200px">
-        <canvas id="winsChart" role="img" aria-label="Line chart of cumulative Braves wins and losses over the 2026 season">Cumulative wins and losses by game.</canvas>
+        <canvas id="winsChart" role="img" aria-label="Line chart of cumulative Braves wins and losses over the 2026 season">Cumulative wins and losses.</canvas>
       </div>
     </div>
     <div class="panel full">
@@ -350,12 +220,12 @@
         <span><span class="ldot" style="background:var(--muted);opacity:.6"></span>Allowed</span>
       </div>
       <div class="chart-wrap" style="height:190px">
-        <canvas id="runsChart" role="img" aria-label="Bar chart of runs scored and allowed per game for the Braves in 2026">Runs scored and allowed per game.</canvas>
+        <canvas id="runsChart" role="img" aria-label="Bar chart of runs scored and allowed per Braves game in 2026">Runs scored and allowed per game.</canvas>
       </div>
     </div>
   </div>
 
-  <!-- GAME LOG TAB -->
+  <!-- GAME LOG -->
   <div id="tab-gamelog" class="tab">
     <div class="panel">
       <div class="panel-title">Full 2026 Game Log — most recent first</div>
@@ -363,7 +233,7 @@
     </div>
   </div>
 
-  <!-- STATS TAB -->
+  <!-- STATS -->
   <div id="tab-stats" class="tab">
     <div class="two-col">
       <div class="panel">
@@ -377,74 +247,30 @@
     </div>
   </div>
 
-  <!-- SCHEDULE TAB -->
+  <!-- SCHEDULE -->
   <div id="tab-schedule" class="tab">
     <div class="panel">
-      <div class="panel-title">Upcoming Schedule</div>
+      <div class="panel-title">Full 2026 Schedule</div>
       <div id="schedule-panel"></div>
     </div>
   </div>
 </main>
 
 <footer>
-  Data powered by <a href="https://www.anthropic.com" target="_blank">Claude AI</a> with web search &bull;
-  Atlanta Braves 2026 &bull;
-  Built with the <a href="https://docs.anthropic.com" target="_blank">Anthropic API</a>
+  Data from the <a href="https://statsapi.mlb.com" target="_blank">MLB Stats API</a> · Free &amp; no key required · Atlanta Braves 2026
 </footer>
 
-<!-- ═══════════════════════════════════════════════════════
-     JAVASCRIPT
-════════════════════════════════════════════════════════ -->
 <script>
-/* ── Seed data (Apr 25 2026) ─────────────────────────── */
-const SEED = {
-  record: { wins: 19, losses: 8 },
-  streak: "W3", last10: "8-2",
-  summary: "The Atlanta Braves are off to a blazing 19-8 start, leading the NL East by 6 games on a 3-game winning streak.",
-  nlEast: [
-    { team:"ATL", wins:19, losses:8 },
-    { team:"MIA", wins:13, losses:13 },
-    { team:"WSH", wins:11, losses:16 },
-    { team:"NYM", wins:9,  losses:17 },
-    { team:"PHI", wins:8,  losses:18 }
-  ],
-  recentGames: [
-    { date:"Apr 24", opponent:"PHI", home:true,  result:"W", score:"5-3" },
-    { date:"Apr 23", opponent:"WSH", home:false, result:"W", score:"7-2" },
-    { date:"Apr 22", opponent:"WSH", home:false, result:"W", score:"8-6" }
-  ],
-  gameLog: [
-    { date:"Apr 24", opponent:"PHI", home:true,  result:"W", score:"5-3" },
-    { date:"Apr 23", opponent:"WSH", home:false, result:"W", score:"7-2" },
-    { date:"Apr 22", opponent:"WSH", home:false, result:"W", score:"8-6" }
-  ],
-  upcomingGames: [
-    { date:"Apr 25", opponent:"PHI", home:true,  time:"7:15 PM ET" },
-    { date:"Apr 26", opponent:"PHI", home:true,  time:"1:35 PM ET" },
-    { date:"Apr 28", opponent:"DET", home:true,  time:"7:15 PM ET" },
-    { date:"Apr 29", opponent:"DET", home:true,  time:"7:15 PM ET" },
-    { date:"Apr 30", opponent:"DET", home:true,  time:"12:15 PM ET" },
-    { date:"May 1",  opponent:"COL", home:false, time:"8:40 PM ET" }
-  ],
-  hitting:  { avg:".268", obp:".341", slg:".445", ops:".786", hr:32, rbi:112, runs:119, hits:198, sb:18, so:221, bb:87 },
-  pitching: { era:"3.42", whip:"1.21", wins:19, losses:8, saves:8, strikeouts:234, bb:89 },
-  winsData: {
-    labels:  ["Apr 1","Apr 5","Apr 9","Apr 13","Apr 17","Apr 21","Apr 25"],
-    wins:    [2, 5, 8, 12, 15, 17, 19],
-    losses:  [1, 2, 4,  5,  5,  7,  8]
-  },
-  runsData: {
-    labels:  ["Apr 22","Apr 23","Apr 24"],
-    scored:  [8, 7, 5],
-    allowed: [6, 2, 3]
-  }
-};
+/* ─── Config ─────────────────────────────────────────── */
+const TEAM_ID = 144;   // Atlanta Braves
+const SEASON  = 2026;
+const MLB     = 'https://statsapi.mlb.com/api/v1';
 
-/* ── Chart instances ─────────────────────────────────── */
+/* ─── Chart refs ─────────────────────────────────────── */
 let wChart, rChart;
-const CHART_COLORS = { red:"#CE1141", muted:"#7a8ba3", green:"#4ade80", amber:"#f59e0b", grid:"rgba(255,255,255,0.04)" };
+const C = { red:'#CE1141', muted:'#7a8ba3', green:'#4ade80', grid:'rgba(255,255,255,0.04)' };
 
-/* ── Tab switching ───────────────────────────────────── */
+/* ─── Tab switching ──────────────────────────────────── */
 function showTab(id, btn) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
@@ -452,140 +278,34 @@ function showTab(id, btn) {
   btn.classList.add('active');
 }
 
-/* ── Helpers ─────────────────────────────────────────── */
+/* ─── Status ─────────────────────────────────────────── */
+function setStatus(msg, state = 'idle') {
+  document.getElementById('status-text').textContent = msg;
+  const dot = document.getElementById('status-dot');
+  dot.className = 'dot' + (state === 'live' ? ' live' : state === 'err' ? ' err' : '');
+}
+
+/* ─── Helpers ────────────────────────────────────────── */
 function pct(w, l) {
-  if (w + l === 0) return '.000';
-  return (w / (w + l)).toFixed(3).replace(/^0/, '');
+  return w + l === 0 ? '.000' : (w / (w + l)).toFixed(3).replace(/^0/, '');
 }
-function sc(label, val, sub, cls='') {
-  return `<div class="stat-card"><div class="sc-label">${label}</div><div class="sc-val ${cls}">${val}</div><div class="sc-sub">${sub}</div></div>`;
+function fmt(n, d = 3) {
+  return (n == null || n === '') ? '—' : parseFloat(n).toFixed(d);
 }
-
-/* ── Render ──────────────────────────────────────────── */
-function render(d) {
-  const { record:r, streak, last10, summary, nlEast, recentGames, gameLog, upcomingGames, hitting, pitching, winsData, runsData } = d;
-  const W = r.wins, L = r.losses;
-
-  /* Header */
-  document.getElementById('hdr-rec').textContent = `${W}-${L}`;
-  const atlEast = nlEast.find(t => t.team === 'ATL');
-  const leader  = [...nlEast].sort((a,b) => b.wins - a.wins)[0];
-  document.getElementById('hdr-div').textContent =
-    leader.team === 'ATL' ? 'Leading NL East' : `NL East — ${atlEast?.wins}-${atlEast?.losses}`;
-
-  /* Stat cards */
-  const rf = (recentGames||[]).reduce((s,g) => {
-    const [a,b] = (g.score||'0-0').split('-').map(Number);
-    return s + (g.result==='W' ? a : b);
-  }, 0);
-  const ra = (recentGames||[]).reduce((s,g) => {
-    const [a,b] = (g.score||'0-0').split('-').map(Number);
-    return s + (g.result==='W' ? b : a);
-  }, 0);
-  document.getElementById('stat-cards').innerHTML =
-    sc('Record',  `${W}-${L}`,       `${W+L} games played`,             'red') +
-    sc('Win %',   pct(W,L),           W > L ? 'Above .500' : 'Below .500') +
-    sc('Streak',  streak||'—',        '',  (streak||'').startsWith('W') ? 'green' : 'red') +
-    sc('Last 10', last10||'—',        'recent form') +
-    (hitting  ? sc('Team AVG', hitting.avg,  'batting average') : '') +
-    (hitting  ? sc('Team OPS', hitting.ops,  'on-base + slugging') : '') +
-    (pitching ? sc('Team ERA', pitching.era, 'earned run average') : '');
-
-  /* Summary */
-  document.getElementById('summary-area').innerHTML =
-    summary ? `<div class="summary">${summary}</div>` : '';
-
-  /* Standings */
-  const sorted = [...nlEast].sort((a,b) => (b.wins/(b.wins+b.losses||1)) - (a.wins/(a.wins+a.losses||1)));
-  document.getElementById('standings-panel').innerHTML = sorted.map(t => `
-    <div class="stand-row ${t.team==='ATL' ? 'atl' : ''}">
-      <span class="st-team">${t.team}</span>
-      <div class="st-bar-bg"><div class="st-bar" style="width:${((t.wins/(t.wins+t.losses||1))*100).toFixed(1)}%"></div></div>
-      <span class="st-rec">${t.wins}-${t.losses}</span>
-      <span class="st-pct">${pct(t.wins,t.losses)}</span>
-    </div>`).join('');
-
-  /* Recent */
-  document.getElementById('recent-panel').innerHTML = (recentGames||[]).map(g => `
-    <div class="game-row">
-      <span class="gr-date">${g.date}</span>
-      <span class="gr-ha">${g.home ? 'vs' : '@'}</span>
-      <span class="gr-opp">${g.opponent}</span>
-      <span class="gr-res ${g.result}">${g.result}</span>
-      <span class="gr-score">${g.score}</span>
-    </div>`).join('');
-
-  /* Full game log */
-  document.getElementById('gamelog-panel').innerHTML = (gameLog||recentGames||[]).map(g => `
-    <div class="game-row">
-      <span class="gr-date">${g.date}</span>
-      <span class="gr-ha">${g.home ? 'vs' : '@'}</span>
-      <span class="gr-opp">${g.opponent}</span>
-      <span class="gr-res ${g.result}">${g.result}</span>
-      <span class="gr-score">${g.score}</span>
-    </div>`).join('') || '<p style="color:var(--muted);font-size:12px;font-family:sans-serif;padding:8px 0">No completed games yet.</p>';
-
-  /* Upcoming schedule */
-  document.getElementById('schedule-panel').innerHTML = (upcomingGames||[]).map(g => `
-    <div class="sched-row">
-      <span class="sd-date">${g.date}</span>
-      <span class="sd-ha ${g.home ? 'home' : 'away'}">${g.home ? 'HOME' : 'AWAY'}</span>
-      <span class="sd-opp">${g.opponent}</span>
-      <span class="${g.result ? 'sd-result ' + g.result : 'sd-time'}">${g.result ? g.result + ' ' + (g.score||'') : (g.time||'TBD')}</span>
-    </div>`).join('') || '<p style="color:var(--muted);font-size:12px;font-family:sans-serif">No upcoming games found.</p>';
-
-  /* Hitting table */
-  if (hitting) {
-    const hRows = [
-      ['AVG', hitting.avg], ['OBP', hitting.obp], ['SLG', hitting.slg], ['OPS', hitting.ops],
-      ['HR', hitting.hr], ['RBI', hitting.rbi], ['Runs', hitting.runs], ['Hits', hitting.hits],
-      ['SB', hitting.sb], ['BB', hitting.bb], ['SO', hitting.so]
-    ];
-    document.getElementById('hitting-panel').innerHTML =
-      `<table class="stat-tbl"><thead><tr><th>Stat</th><th>Value</th></tr></thead>
-       <tbody>${hRows.map(([l,v])=>`<tr><td>${l}</td><td>${v??'—'}</td></tr>`).join('')}</tbody></table>`;
-  }
-
-  /* Pitching table */
-  if (pitching) {
-    const pRows = [
-      ['ERA', pitching.era], ['WHIP', pitching.whip],
-      ['W-L', `${pitching.wins}-${pitching.losses}`], ['Saves', pitching.saves],
-      ['K', pitching.strikeouts], ['BB', pitching.bb]
-    ];
-    document.getElementById('pitching-panel').innerHTML =
-      `<table class="stat-tbl"><thead><tr><th>Stat</th><th>Value</th></tr></thead>
-       <tbody>${pRows.map(([l,v])=>`<tr><td>${l}</td><td>${v??'—'}</td></tr>`).join('')}</tbody></table>`;
-  }
-
-  /* Wins chart */
-  if (winsData) {
-    if (wChart) wChart.destroy();
-    wChart = new Chart(document.getElementById('winsChart'), {
-      type: 'line',
-      data: { labels: winsData.labels, datasets: [
-        { label:'Wins',   data: winsData.wins,   borderColor: CHART_COLORS.red,   backgroundColor:'rgba(206,17,65,0.12)',  fill:true, tension:.4, pointRadius:3, pointBackgroundColor:CHART_COLORS.red,   borderWidth:2 },
-        { label:'Losses', data: winsData.losses, borderColor: CHART_COLORS.muted, backgroundColor:'rgba(122,139,163,0.05)', fill:true, tension:.4, pointRadius:3, pointBackgroundColor:CHART_COLORS.muted, borderWidth:2, borderDash:[5,3] }
-      ]},
-      options: chartOpts()
-    });
-  }
-
-  /* Runs chart */
-  if (runsData) {
-    if (rChart) rChart.destroy();
-    rChart = new Chart(document.getElementById('runsChart'), {
-      type: 'bar',
-      data: { labels: runsData.labels, datasets: [
-        { label:'Scored',  data: runsData.scored,  backgroundColor: CHART_COLORS.red,                    borderRadius: 3 },
-        { label:'Allowed', data: runsData.allowed, backgroundColor: 'rgba(122,139,163,0.4)', borderRadius: 3 }
-      ]},
-      options: { ...chartOpts(), scales: { ...chartOpts().scales, y: { ...chartOpts().scales.y, beginAtZero:true } } }
-    });
-  }
+function card(label, val, sub, cls = '') {
+  return `<div class="stat-card">
+    <div class="sc-label">${label}</div>
+    <div class="sc-val ${cls}">${val}</div>
+    <div class="sc-sub">${sub}</div>
+  </div>`;
 }
-
-function chartOpts() {
+function localTime(iso) {
+  return new Date(iso).toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit', timeZoneName:'short' });
+}
+function shortDate(dateStr) {
+  return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', { month:'short', day:'numeric' });
+}
+function chartOpts(yExtra = {}) {
   return {
     responsive: true, maintainAspectRatio: false,
     plugins: {
@@ -593,136 +313,270 @@ function chartOpts() {
       tooltip: { backgroundColor:'#181d2b', borderColor:'rgba(255,255,255,0.1)', borderWidth:1, titleColor:'#eef0f4', bodyColor:'#7a8ba3' }
     },
     scales: {
-      x: { ticks:{ color:CHART_COLORS.muted, maxTicksLimit:10, font:{size:10} }, grid:{ color:CHART_COLORS.grid } },
-      y: { ticks:{ color:CHART_COLORS.muted, font:{size:10} }, grid:{ color:CHART_COLORS.grid } }
+      x: { ticks:{ color:C.muted, maxTicksLimit:12, font:{size:10} }, grid:{ color:C.grid } },
+      y: { ticks:{ color:C.muted, font:{size:10} }, grid:{ color:C.grid }, ...yExtra }
     }
   };
 }
 
-/* ── API key management ──────────────────────────────── */
-function getKey()   { return localStorage.getItem('braves_api_key'); }
-function saveKey() {
-  const val = document.getElementById('key-input').value.trim();
-  if (!val.startsWith('sk-ant-') && !val.startsWith('sk-')) {
-    document.getElementById('setup-err').textContent = 'That doesn\'t look like an Anthropic API key (should start with sk-ant-…)';
-    return;
+/* ─── Parse raw schedule dates → game array ──────────── */
+function parseGames(dates) {
+  const games = [];
+  for (const d of (dates || [])) {
+    for (const g of (d.games || [])) {
+      const isHome = g.teams?.home?.team?.id === TEAM_ID;
+      const mine   = isHome ? g.teams.home : g.teams.away;
+      const opp    = isHome ? g.teams.away : g.teams.home;
+      const myR    = mine?.score;
+      const oppR   = opp?.score;
+      const state  = g.status?.abstractGameState; // 'Final' | 'Live' | 'Preview'
+      const result = state === 'Final' ? (myR > oppR ? 'W' : 'L') : null;
+      games.push({
+        date: d.date,
+        disp: shortDate(d.date),
+        isHome,
+        oppName: opp?.team?.name        || '—',
+        oppAbbr: opp?.team?.abbreviation || '—',
+        myR, oppR, result, state,
+        gameDate: g.gameDate,
+        wins:   mine?.leagueRecord?.wins,
+        losses: mine?.leagueRecord?.losses,
+      });
+    }
   }
-  localStorage.setItem('braves_api_key', val);
-  document.getElementById('setup').style.display = 'none';
-  setStatus('Key saved. Fetching live data…', false);
-  fetchAI();
-}
-function resetKey() {
-  localStorage.removeItem('braves_api_key');
-  document.getElementById('key-input').value = '';
-  document.getElementById('setup-err').textContent = '';
-  document.getElementById('setup').style.display = 'flex';
+  return games;
 }
 
-/* ── Status bar ──────────────────────────────────────── */
-function setStatus(msg, live=false) {
-  document.getElementById('status-text').textContent = msg;
-  document.getElementById('status-dot').className = 'dot' + (live ? ' live' : '');
+/* ─── Render: header ─────────────────────────────────── */
+function renderHeader(games, standData) {
+  const played = games.filter(g => g.result);
+  const W = played.filter(g => g.result === 'W').length;
+  const L = played.length - W;
+  document.getElementById('hdr-rec').textContent = `${W}-${L}`;
+
+  const nlEast = (standData?.records || []).find(r => r.division?.name === 'National League East');
+  if (nlEast) {
+    const atl = nlEast.teamRecords.find(t => t.team.id === TEAM_ID);
+    document.getElementById('hdr-div').textContent =
+      atl?.gamesBack === '0' ? 'Leading NL East' : `NL East · ${atl?.gamesBack} GB`;
+  }
 }
 
-/* ── AI fetch ────────────────────────────────────────── */
-async function fetchAI() {
-  const key = getKey();
-  if (!key) { document.getElementById('setup').style.display = 'flex'; return; }
+/* ─── Render: stat cards ─────────────────────────────── */
+function renderStatCards(games, hit, pitch) {
+  const played = games.filter(g => g.result);
+  const W  = played.filter(g => g.result === 'W').length;
+  const L  = played.length - W;
+  const rf = played.reduce((s, g) => s + (g.myR  || 0), 0);
+  const ra = played.reduce((s, g) => s + (g.oppR || 0), 0);
+  const rd = rf - ra;
 
+  let sLen = 0, sType = null;
+  for (let i = played.length - 1; i >= 0; i--) {
+    if (!sType) { sType = played[i].result; sLen = 1; }
+    else if (played[i].result === sType) sLen++;
+    else break;
+  }
+  const streak = sType ? sType + sLen : '—';
+  const last10 = played.slice(-10);
+  const l10w   = last10.filter(g => g.result === 'W').length;
+
+  const hs = hit?.stats?.[0]?.splits?.[0]?.stat;
+  const ps = pitch?.stats?.[0]?.splits?.[0]?.stat;
+
+  document.getElementById('stat-cards').innerHTML =
+    card('Record',   `${W}-${L}`,                  `${played.length} games`,           'red')   +
+    card('Win %',    pct(W, L),                     W > L ? 'Above .500' : 'Below .500')          +
+    card('Streak',   streak,                        '',  sType === 'W' ? 'green' : 'red')         +
+    card('Last 10',  `${l10w}-${10-l10w}`,          l10w >= 7 ? 'Hot stretch' : 'Recent form')    +
+    card('Runs/G',   played.length ? (rf/played.length).toFixed(1) : '—', `${rf} scored`)         +
+    card('RA/G',     played.length ? (ra/played.length).toFixed(1) : '—', `${ra} allowed`)        +
+    card('Run Diff', (rd >= 0 ? '+' : '') + rd,     'season',  rd >= 0 ? 'green' : 'red')         +
+    (hs ? card('AVG',      fmt(hs.avg),       'batting average')    : '') +
+    (hs ? card('OPS',      fmt(hs.ops),       'on-base + slugging') : '') +
+    (ps ? card('ERA',      fmt(ps.era, 2),    'team ERA')           : '');
+}
+
+/* ─── Render: standings ──────────────────────────────── */
+function renderStandings(standData) {
+  const nlEast = (standData?.records || []).find(r => r.division?.name === 'National League East');
+  if (!nlEast) { document.getElementById('standings-panel').innerHTML = '<div class="err-box">Standings unavailable.</div>'; return; }
+  const teams = [...nlEast.teamRecords].sort((a, b) => (b.wins/(b.wins+b.losses||1)) - (a.wins/(a.wins+a.losses||1)));
+  document.getElementById('standings-panel').innerHTML = teams.map(t => {
+    const isAtl = t.team.id === TEAM_ID;
+    const wp    = t.wins / (t.wins + t.losses || 1);
+    return `<div class="stand-row ${isAtl ? 'atl' : ''}">
+      <span class="st-team">${t.team.abbreviation}</span>
+      <div class="st-bar-bg"><div class="st-bar" style="width:${(wp*100).toFixed(1)}%"></div></div>
+      <span class="st-rec">${t.wins}-${t.losses}</span>
+      <span class="st-pct">${pct(t.wins, t.losses)}</span>
+    </div>`;
+  }).join('');
+}
+
+/* ─── Render: recent results ─────────────────────────── */
+function renderRecent(games) {
+  const played = games.filter(g => g.result).slice(-5).reverse();
+  document.getElementById('recent-panel').innerHTML = played.map(g => `
+    <div class="game-row">
+      <span class="gr-date">${g.disp}</span>
+      <span class="gr-ha">${g.isHome ? 'vs' : '@'}</span>
+      <span class="gr-opp">${g.oppName}</span>
+      <span class="gr-res ${g.result}">${g.result}</span>
+      <span class="gr-score">${g.myR}-${g.oppR}</span>
+    </div>`).join('') || '<p style="color:var(--muted);font-size:12px;font-family:sans-serif">No completed games yet.</p>';
+}
+
+/* ─── Render: full game log ──────────────────────────── */
+function renderGameLog(games) {
+  const played = games.filter(g => g.result).reverse();
+  document.getElementById('gamelog-panel').innerHTML = played.map(g => `
+    <div class="game-row">
+      <span class="gr-date">${g.disp}</span>
+      <span class="gr-ha">${g.isHome ? 'vs' : '@'}</span>
+      <span class="gr-opp">${g.oppName}</span>
+      <span class="gr-res ${g.result}">${g.result}</span>
+      <span class="gr-score">${g.myR}-${g.oppR}</span>
+      <span class="gr-rec">${g.wins != null ? g.wins+'-'+g.losses : ''}</span>
+    </div>`).join('') || '<p style="color:var(--muted);font-size:12px;font-family:sans-serif;padding:8px 0">No completed games yet.</p>';
+}
+
+/* ─── Render: schedule ───────────────────────────────── */
+function renderSchedule(games) {
+  document.getElementById('schedule-panel').innerHTML = games.map(g => {
+    let right;
+    if (g.result) {
+      right = `<span class="sd-res ${g.result}">${g.result} ${g.myR}-${g.oppR}</span>`;
+    } else if (g.state === 'Live') {
+      right = `<span style="color:var(--red);font-size:11px;font-family:sans-serif;font-weight:700">LIVE</span>`;
+    } else {
+      right = `<span class="sd-time">${localTime(g.gameDate)}</span>`;
+    }
+    return `<div class="sched-row">
+      <span class="sd-date">${g.disp}</span>
+      <span class="sd-ha ${g.isHome ? 'home' : 'away'}">${g.isHome ? 'HOME' : 'AWAY'}</span>
+      <span class="sd-opp">${g.oppName}</span>
+      ${right}
+    </div>`;
+  }).join('') || '<div class="err-box">No schedule data found.</div>';
+}
+
+/* ─── Render: hitting table ──────────────────────────── */
+function renderHitting(hit) {
+  const s = hit?.stats?.[0]?.splits?.[0]?.stat;
+  if (!s) { document.getElementById('hitting-panel').innerHTML = '<div class="err-box">Hitting data unavailable.</div>'; return; }
+  const rows = [
+    ['AVG', fmt(s.avg)], ['OBP', fmt(s.obp)], ['SLG', fmt(s.slg)], ['OPS', fmt(s.ops)],
+    ['HR', s.homeRuns], ['RBI', s.rbi], ['Runs', s.runs], ['Hits', s.hits],
+    ['2B', s.doubles], ['3B', s.triples], ['SB', s.stolenBases],
+    ['BB', s.baseOnBalls], ['SO', s.strikeOuts], ['LOB', s.leftOnBase],
+  ];
+  document.getElementById('hitting-panel').innerHTML =
+    `<table class="stat-tbl"><thead><tr><th>Stat</th><th>Value</th></tr></thead>
+     <tbody>${rows.map(([l,v]) => `<tr><td>${l}</td><td>${v ?? '—'}</td></tr>`).join('')}</tbody></table>`;
+}
+
+/* ─── Render: pitching table ─────────────────────────── */
+function renderPitching(pitch) {
+  const s = pitch?.stats?.[0]?.splits?.[0]?.stat;
+  if (!s) { document.getElementById('pitching-panel').innerHTML = '<div class="err-box">Pitching data unavailable.</div>'; return; }
+  const rows = [
+    ['ERA', fmt(s.era, 2)], ['WHIP', fmt(s.whip, 2)],
+    ['W-L', `${s.wins}-${s.losses}`], ['Saves', s.saves],
+    ['IP', fmt(s.inningsPitched, 1)], ['K', s.strikeOuts],
+    ['BB', s.baseOnBalls], ['H', s.hits], ['HR', s.homeRuns],
+    ['HLD', s.holds], ['BS', s.blownSaves], ['SHO', s.shutouts],
+  ];
+  document.getElementById('pitching-panel').innerHTML =
+    `<table class="stat-tbl"><thead><tr><th>Stat</th><th>Value</th></tr></thead>
+     <tbody>${rows.map(([l,v]) => `<tr><td>${l}</td><td>${v ?? '—'}</td></tr>`).join('')}</tbody></table>`;
+}
+
+/* ─── Render: wins/losses chart ──────────────────────── */
+function renderWinsChart(games) {
+  const played = games.filter(g => g.result);
+  let W = 0, L = 0;
+  const labels = [], wData = [], lData = [];
+  for (const g of played) {
+    if (g.result === 'W') W++; else L++;
+    labels.push(g.disp); wData.push(W); lData.push(L);
+  }
+  if (wChart) wChart.destroy();
+  wChart = new Chart(document.getElementById('winsChart'), {
+    type: 'line',
+    data: { labels, datasets: [
+      { label:'Wins',   data:wData, borderColor:C.red,   backgroundColor:'rgba(206,17,65,0.12)',  fill:true, tension:.4, pointRadius:0, borderWidth:2 },
+      { label:'Losses', data:lData, borderColor:C.muted, backgroundColor:'rgba(122,139,163,0.05)', fill:true, tension:.4, pointRadius:0, borderWidth:2, borderDash:[5,3] }
+    ]},
+    options: chartOpts({ beginAtZero:true })
+  });
+}
+
+/* ─── Render: runs chart ─────────────────────────────── */
+function renderRunsChart(games) {
+  const played  = games.filter(g => g.result);
+  const labels  = played.map(g => g.disp);
+  const scored  = played.map(g => g.myR  || 0);
+  const allowed = played.map(g => g.oppR || 0);
+  if (rChart) rChart.destroy();
+  rChart = new Chart(document.getElementById('runsChart'), {
+    type: 'bar',
+    data: { labels, datasets: [
+      { label:'Scored',  data:scored,  backgroundColor:C.red,                   borderRadius:2 },
+      { label:'Allowed', data:allowed, backgroundColor:'rgba(122,139,163,0.4)', borderRadius:2 }
+    ]},
+    options: chartOpts({ beginAtZero:true })
+  });
+}
+
+/* ─── Main: fetch all endpoints ──────────────────────── */
+async function loadAll() {
   const btn = document.getElementById('refresh-btn');
   btn.disabled = true;
   btn.textContent = '⟳ Loading…';
-  setStatus('Calling Claude with web search — this takes ~10 seconds…');
-
-  const PROMPT = `Search the web for current 2026 Atlanta Braves MLB season statistics and schedule.
-Return ONLY a single valid JSON object — no markdown, no backticks, no extra text — using exactly this structure:
-
-{
-  "record": {"wins": 0, "losses": 0},
-  "streak": "W3",
-  "last10": "7-3",
-  "summary": "One engaging sentence about the Braves current performance this season.",
-  "nlEast": [
-    {"team":"ATL","wins":0,"losses":0},
-    {"team":"MIA","wins":0,"losses":0},
-    {"team":"WSH","wins":0,"losses":0},
-    {"team":"NYM","wins":0,"losses":0},
-    {"team":"PHI","wins":0,"losses":0}
-  ],
-  "recentGames": [
-    {"date":"Apr 24","opponent":"PHI","home":true,"result":"W","score":"5-3"}
-  ],
-  "gameLog": [
-    {"date":"Apr 24","opponent":"PHI","home":true,"result":"W","score":"5-3"}
-  ],
-  "upcomingGames": [
-    {"date":"Apr 25","opponent":"PHI","home":true,"time":"7:15 PM ET"}
-  ],
-  "hitting": {"avg":".268","obp":".341","slg":".445","ops":".786","hr":32,"rbi":112,"runs":119,"hits":198,"sb":18,"so":221,"bb":87},
-  "pitching": {"era":"3.42","whip":"1.21","wins":0,"losses":0,"saves":8,"strikeouts":234,"bb":89},
-  "winsData": {
-    "labels": ["Apr 1","Apr 7","Apr 14","Apr 21","Today"],
-    "wins":   [2, 6, 11, 16, 19],
-    "losses": [1, 3,  5,  7,  8]
-  },
-  "runsData": {
-    "labels":  ["Game 1","Game 2","Game 3","Game 4","Game 5"],
-    "scored":  [5, 8, 3, 7, 5],
-    "allowed": [3, 6, 4, 2, 3]
-  }
-}
-
-Fill ALL values with real current data from the web search.
-gameLog = every completed 2026 regular season game, most recent first.
-upcomingGames = next 7 scheduled games.
-winsData and runsData should reflect the actual season so far.`;
+  setStatus('Fetching from MLB Stats API…');
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 2000,
-        tools: [{ type:'web_search_20250305', name:'web_search' }],
-        messages: [{ role:'user', content: PROMPT }]
-      })
-    });
+    const [schedRes, standRes, hitRes, pitchRes] = await Promise.all([
+      fetch(`${MLB}/schedule?teamId=${TEAM_ID}&season=${SEASON}&gameType=R&hydrate=linescore`),
+      fetch(`${MLB}/standings?leagueId=104&season=${SEASON}&standingsTypes=regularSeason`),
+      fetch(`${MLB}/teams/${TEAM_ID}/stats?stats=season&group=hitting&season=${SEASON}`),
+      fetch(`${MLB}/teams/${TEAM_ID}/stats?stats=season&group=pitching&season=${SEASON}`),
+    ]);
 
-    if (!res.ok) {
-      const errBody = await res.json().catch(()=>({}));
-      throw new Error(errBody?.error?.message || `HTTP ${res.status}`);
-    }
+    if (!schedRes.ok || !standRes.ok) throw new Error(`MLB API returned ${schedRes.status}`);
 
-    const data = await res.json();
-    const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
-    const cleaned = text.replace(/```json|```/g, '').trim();
-    const parsed  = JSON.parse(cleaned);
+    const [sched, stands, hit, pitch] = await Promise.all([
+      schedRes.json(), standRes.json(), hitRes.json(), pitchRes.json()
+    ]);
 
-    render(parsed);
+    const games = parseGames(sched.dates);
+
+    renderHeader(games, stands);
+    renderStatCards(games, hit, pitch);
+    renderStandings(stands);
+    renderRecent(games);
+    renderGameLog(games);
+    renderSchedule(games);
+    renderHitting(hit);
+    renderPitching(pitch);
+    renderWinsChart(games);
+    renderRunsChart(games);
+
     const now = new Date().toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
-    setStatus(`Live data via Claude · Last updated ${now}`, true);
+    setStatus(`Live · MLB Stats API · Updated ${now}`, 'live');
 
   } catch (err) {
-    console.error('AI fetch failed:', err);
-    setStatus(`⚠ Refresh failed: ${err.message} — showing cached data.`);
-    if (err.message.includes('401') || err.message.includes('invalid')) {
-      document.getElementById('setup-err').textContent = 'API key rejected. Please re-enter.';
-      resetKey();
-    }
+    console.error(err);
+    setStatus(`Could not load data: ${err.message}. Note: must be served from a web server (not opened as a local file).`, 'err');
   }
 
   btn.disabled = false;
-  btn.textContent = '✦ Refresh';
+  btn.textContent = '⟳ Refresh';
 }
 
-/* ── Boot ────────────────────────────────────────────── */
-render(SEED);
-if (getKey()) {
-  document.getElementById('setup').style.display = 'none';
-  fetchAI();
-}
+/* ─── Boot ───────────────────────────────────────────── */
+loadAll();
 </script>
 </body>
 </html>
