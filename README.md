@@ -1,34 +1,20 @@
 # ⚾ Atlanta Braves 2026 Dashboard
 
-A live, AI-powered MLB dashboard for the Atlanta Braves — built as a single HTML file with no backend, no build step, and no dependencies to install.
+A live MLB dashboard for the Atlanta Braves — single HTML file, no API key, no backend, no build step. Just put it on GitHub Pages and share the link.
 
-**[Live Demo →](https://your-username.github.io/braves-dashboard)**
-
-![Braves Dashboard](https://img.shields.io/badge/Atlanta-Braves-CE1141?style=flat-square&logo=data:image/svg+xml;base64,)
+**Data source:** [MLB Stats API](https://statsapi.mlb.com) — free, public, no authentication required.
 
 ---
 
-## Features
+## Deploy to GitHub Pages (3 steps)
 
-- **AI-powered live data** — Claude searches the web and returns current stats, standings, game log, and schedule on every refresh
-- **4 tabs**: Overview · Game Log · Stats · Schedule
-- **Charts**: Wins/losses season arc, runs scored vs. allowed per game
-- **NL East standings** with win-percentage bars
-- **Zero dependencies** — single `index.html`, works in any browser
-- **API key stored locally** — never committed to your repo
+### 1. Create a new repo
+Go to [github.com/new](https://github.com/new), name it `braves-dashboard`, set it to **Public**, and click **Create repository**.
 
----
+### 2. Upload the file
+On the new repo page, click **Add file → Upload files**, drag in `index.html`, and commit.
 
-## How to Deploy on GitHub Pages
-
-### 1. Create a new GitHub repo
-
-Go to [github.com/new](https://github.com/new) and create a public repository called `braves-dashboard` (or any name you like).
-
-### 2. Add the file
-
-Upload `index.html` to the root of the repo. You can do this via the GitHub web UI (drag and drop) or via git:
-
+Or via the command line:
 ```bash
 git clone https://github.com/YOUR_USERNAME/braves-dashboard.git
 cd braves-dashboard
@@ -38,75 +24,52 @@ git commit -m "Add Braves dashboard"
 git push
 ```
 
-### 3. Enable GitHub Pages
+### 3. Enable Pages
+Go to **Settings → Pages**, set source to **Deploy from a branch**, pick `main` / `(root)`, and click **Save**.
 
-1. Go to your repo on GitHub
-2. Click **Settings** → **Pages** (left sidebar)
-3. Under **Source**, select **Deploy from a branch**
-4. Set **Branch** to `main` (or `master`) and folder to `/ (root)`
-5. Click **Save**
-
-Your dashboard will be live at:
+Your dashboard is live in ~60 seconds at:
 ```
 https://YOUR_USERNAME.github.io/braves-dashboard
 ```
-(Takes ~60 seconds to deploy on first push.)
-
-### 4. Get an Anthropic API key
-
-1. Go to [console.anthropic.com/keys](https://console.anthropic.com/keys)
-2. Create a new key
-3. When you open the dashboard, paste the key into the setup screen
-4. The key is stored in your browser's `localStorage` — it is **never** sent to GitHub or anyone except Anthropic's API
 
 ---
 
-## How It Works
+## Why it works on GitHub Pages but not as a local file
 
-```
-Browser → Anthropic API (claude-sonnet + web_search tool)
-                ↓
-      Claude searches the web for current
-      Braves stats, standings, schedule
-                ↓
-      Returns structured JSON → Dashboard renders
+The MLB Stats API is a public API, but browsers block cross-origin requests from `file://` URLs (this is called CORS). GitHub Pages serves your file over `https://`, which the MLB API accepts. If you want to run it locally during development, use any simple local server:
+
+```bash
+# Python (built-in)
+python3 -m http.server 8000
+# then open http://localhost:8000
+
+# Node (npx, no install needed)
+npx serve .
 ```
 
-The dashboard bakes in seed data (last known stats) so it renders instantly. Clicking **Refresh** triggers a live AI-powered fetch — this calls the Anthropic API directly from your browser and costs a few cents per click.
+---
+
+## Features
+
+| Tab | What's in it |
+|-----|-------------|
+| **Overview** | Record, win %, streak, last 10, runs/game, ERA, AVG, OPS · NL East standings · Wins/losses season arc chart · Runs scored vs. allowed per game |
+| **Game Log** | Every completed 2026 regular season game with result, score, and running record |
+| **Stats** | Full team hitting (AVG, OBP, SLG, OPS, HR, RBI, SB…) and pitching (ERA, WHIP, K, saves, holds…) |
+| **Schedule** | Full 162-game schedule — past games show results, future games show local start times |
+
+Hit **⟳ Refresh** any time to pull fresh data from the MLB API.
 
 ---
 
-## Data Refreshed on Each Click
+## Customizing for another team
 
-| Section | Data |
-|---------|------|
-| Overview | Record, win %, streak, last 10, ERA, AVG, OPS |
-| Standings | Full NL East W-L and win percentage |
-| Game Log | Every completed 2026 regular season game |
-| Schedule | Next 7 upcoming games with times |
-| Charts | Season wins/losses arc, runs scored vs. allowed |
-
----
-
-## Sharing
-
-Once deployed, just send the GitHub Pages URL to friends. They'll see a setup screen asking for their own API key — each person uses their own key, so you don't share yours.
-
-Alternatively, if you want a "no key required" version for friends, you can bake a key into the HTML — but **do not commit that version to a public repo** or your key will be exposed.
-
----
-
-## Customization
-
-The seed data at the top of `index.html` (the `SEED` object) can be edited to any team by changing:
-- The team names and records in `nlEast`
-- The `recentGames`, `upcomingGames`, and `gameLog` arrays
-- The `hitting` and `pitching` stats objects
-
-And updating the AI prompt in `fetchAI()` to ask about a different team.
+1. Find your team's ID at `https://statsapi.mlb.com/api/v1/teams?sportId=1`
+2. Change `const TEAM_ID = 144` near the top of `index.html`
+3. Change `leagueId=104` (NL) to `leagueId=103` if switching to an AL team
+4. Update the page title and header text
 
 ---
 
 ## License
-
 MIT — do whatever you want with it. Go Braves! ⚾
