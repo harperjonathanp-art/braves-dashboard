@@ -395,11 +395,15 @@ function renderHeader(games, stands) {
   document.getElementById('hdr-rec').textContent = `${W}-${L}`;
 
   if (stands) {
-    const nlEast = (stands.records || []).find(r => r.division?.name === 'National League East');
-    if (nlEast) {
-      const atl = nlEast.teamRecords?.find(t => t.team.id === TEAM_ID);
+    // Find the division record that contains our team — avoids fragile name-string matching
+    const ourDiv = (stands.records || []).find(r =>
+      r.teamRecords?.some(t => t.team.id === TEAM_ID)
+    );
+    if (ourDiv) {
+      const atl = ourDiv.teamRecords.find(t => t.team.id === TEAM_ID);
+      const divName = ourDiv.division?.nameShort || ourDiv.division?.name || 'Division';
       document.getElementById('hdr-div').textContent =
-        atl?.gamesBack === '0' ? 'Leading NL East' : `NL East · ${atl?.gamesBack || '?'} GB`;
+        atl?.gamesBack === '0' ? `Leading ${divName}` : `${divName} · ${atl?.gamesBack || '?'} GB`;
     }
   }
 }
@@ -441,8 +445,11 @@ function renderStatCards(games, hit, pitch) {
 function renderStandings(stands) {
   const el = document.getElementById('standings-panel');
   if (!stands) { el.innerHTML = '<div class="err-box">Standings unavailable.</div>'; return; }
-  const nlEast = (stands.records || []).find(r => r.division?.name === 'National League East');
-  if (!nlEast) { el.innerHTML = '<div class="err-box">NL East data not found.</div>'; return; }
+  // Find the division record that contains our team — avoids fragile name-string matching
+  const nlEast = (stands.records || []).find(r =>
+    r.teamRecords?.some(t => t.team.id === TEAM_ID)
+  );
+  if (!nlEast) { el.innerHTML = '<div class="err-box">Division data not found in standings response.</div>'; return; }
   const teams = [...nlEast.teamRecords].sort((a, b) => (b.wins/(b.wins+b.losses||1)) - (a.wins/(a.wins+a.losses||1)));
   el.innerHTML = teams.map(t => {
     const isAtl = t.team.id === TEAM_ID;
